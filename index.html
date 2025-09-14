@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpotShare</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a1a;
+        }
+        .page-container {
+            display: none;
+        }
+        .page-container.active {
+            display: block;
+        }
+        .sticky-header-wrapper {
+            position: sticky;
+            top: 0;
+            background-color: #1a1a1a;
+            z-index: 1000;
+            padding-bottom: 5px;
+        }
+        .post-card {
+            min-height: 400px;
+        }
+    </style>
+</head>
+<body class="bg-[#1a1a1a] text-white flex flex-col min-h-screen">
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50 hidden">
+        <div class="flex flex-col items-center space-y-4">
+            <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-orange-500"></div>
+            <p class="text-white text-lg font-medium">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <div id="app-container" class="flex-grow">
+        
+        <!-- Homepage Section -->
+        <div id="homepage" class="page-container active pb-20">
+            <!-- Header Bar -->
+            <header class="p-4 flex justify-between items-center text-white">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-map-marker-alt text-lg text-orange-500"></i>
+                    <span class="text-sm font-medium">MIT ADT University,
+                        <br>
+                        <span>
+                            Loni Kalbhor, Pune
+                        </span> 
+                    </span>
+                </div>
+                            
+                <div class="flex items-center space-x-2">
+                    <h1 class="text-xl font-bold">SpotShare</h1>
+                    <i class="fas fa-camera-retro text-2xl text-orange-500"></i>
+                </div>
+            </header>
+
+            <!-- Sticky Search and Filter Section -->
+            <div id="sticky-header" class="sticky-header-wrapper transition-transform duration-300 transform -translate-y-0">
+                <!-- Search and Filter Bar -->
+                <div class="flex items-center p-4">
+                    <div class="relative flex-grow">
+                        <input id="search-input" type="text" placeholder="Search here...." class="w-full p-3 pl-10 rounded-xl bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 border-none">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                    <button id="filter-btn" class="ml-4 p-3 rounded-xl bg-gray-800 text-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        <i class="fas fa-filter text-lg"></i>
+                    </button>
+                </div>
+
+                <!-- Category Buttons -->
+                <div class="flex flex-row-reverse justify-around items-center px-4 mb-4">
+                    <button id="food-filter" class="px-4 py-2 rounded-full bg-orange-500 text-white font-medium focus:outline-none transition-colors duration-200">
+                        Food Spots
+                    </button>
+                    <button id="places-filter" class="px-4 py-2 rounded-full bg-gray-800 text-gray-400 font-medium focus:outline-none transition-colors duration-200">
+                        Places
+                    </button>
+                    <button id="all-filter" class="px-4 py-2 rounded-full bg-gray-800 text-gray-400 font-medium focus:outline-none transition-colors duration-200">
+                        All
+                    </button>
+                </div>
+            </div>
+
+            <!-- Posts Container (Feed) -->
+            <div id="posts-container" class="p-4 space-y-6">
+                <!-- Posts will be dynamically generated here by JavaScript -->
+            </div>
+            
+        </div>
+
+        <!-- Filter Modal -->
+        <div id="filter-modal" class="fixed inset-0 z-[1001] hidden flex items-center justify-center bg-black bg-opacity-75 backdrop-blur-sm">
+            <div class="bg-gray-800 rounded-3xl p-6 w-11/12 max-w-sm border border-gray-700 shadow-xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-white">Filter Posts</h2>
+                    <button id="close-modal-btn" class="text-gray-400 hover:text-white text-3xl">&times;</button>
+                </div>
+
+                <!-- Sort by Likes -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-white mb-2">Minimum Likes</h3>
+                    <input id="likes-input" type="number" min="0" placeholder="e.g. 5" class="w-full p-3 rounded-xl bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+
+                <!-- Filter by Tags -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-white mb-2">Filter by Tags</h3>
+                    <div id="tags-container" class="flex flex-wrap gap-2">
+                        <!-- Tags will be dynamically populated here -->
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-4">
+                    <button id="clear-filters-btn" class="py-2 px-6 rounded-full bg-gray-700 text-white font-semibold hover:bg-gray-600 transition-colors">
+                        Clear
+                    </button>
+                    <button id="apply-filters-btn" class="py-2 px-6 rounded-full bg-orange-500 text-white font-semibold hover:bg-orange-600 transition-colors">
+                        Apply
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Add Post Section -->
+        <div id="add-post-page" class="page-container p-6 pb-20">
+            <h1 class="text-3xl font-bold text-center mt-8 mb-6 text-white">Add a Spot</h1>
+
+            <!-- Category Selection -->
+            <div class="flex justify-center items-center p-2 rounded-full bg-gray-800 border border-gray-700 mb-6">
+                <button id="food-btn" class="flex-1 px-4 py-2 rounded-full bg-orange-500 text-white font-medium focus:outline-none transition-colors duration-200">
+                    Food
+                </button>
+                <button id="place-btn" class="flex-1 px-4 py-2 rounded-full text-gray-400 font-medium focus:outline-none transition-colors duration-200">
+                    Place
+                </button>
+            </div>
+
+            <form id="add-post-form" class="space-y-6">
+                
+                <!-- Name Field -->
+                <div>
+                    <label for="post-name" class="block text-sm font-medium text-gray-400 mb-1">Name of the Spot</label>
+                    <input type="text" id="post-name" name="post-name" required class="w-full p-3 rounded-xl bg-gray-800 text-white placeholder-gray-500 border border-gray-700 focus:outline-none focus:border-orange-500">
+                </div>
+
+                <!-- Location Field -->
+                <div>
+                    <label for="post-location" class="block text-sm font-medium text-gray-400 mb-1">Location</label>
+                    <input type="text" id="post-location" name="post-location" required class="w-full p-3 rounded-xl bg-gray-800 text-white placeholder-gray-500 border border-gray-700 focus:outline-none focus:border-orange-500">
+                </div>
+
+                <!-- Description Field -->
+                <div>
+                    <label for="post-description" class="block text-sm font-medium text-gray-400 mb-1">Description</label>
+                    <textarea id="post-description" name="post-description" rows="4" maxlength="300" class="w-full p-3 rounded-xl bg-gray-800 text-white placeholder-gray-500 border border-gray-700 focus:outline-none focus:border-orange-500 resize-none"></textarea>
+                    <p id="char-counter" class="text-xs text-gray-500 mt-1 text-right">0 / 35 words (approx)</p>
+                </div>
+                
+                <!-- Image Upload Section -->
+                <div class="text-center bg-gray-800 border border-gray-700 rounded-xl p-6 hover:bg-gray-700 cursor-pointer transition-colors duration-200">
+                    <input type="file" id="image-upload" name="images" multiple accept="image/*" class="hidden">
+                    <label for="image-upload" class="flex flex-col items-center justify-center">
+                        <i class="fas fa-upload text-3xl text-orange-500"></i>
+                        <span class="mt-2 font-medium text-gray-400">Upload Images</span>
+                        <span class="text-xs text-gray-500">(Max 10 images)</span>
+                    </label>
+                </div>
+                <div id="image-preview" class="grid grid-cols-3 gap-2 mt-4"></div>
+
+                <!-- Tags/Subcategories Section -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Select Tags</label>
+                    <div id="tags-container" class="flex flex-wrap gap-2">
+                        <!-- Tags will be injected here by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="w-full py-4 bg-orange-500 text-white rounded-xl font-bold text-lg shadow-md hover:bg-orange-600 transition-colors duration-200">
+                    Submit Post
+                </button>
+            </form>
+        </div>
+
+        <!-- Profile Page Section -->
+        <div id="profile-page" class="page-container p-6 pb-20">
+            <h1 class="text-3xl font-bold text-center mt-8 mb-6 text-white">Profile</h1>
+            <div id="profile-content" class="bg-gray-800 p-6 rounded-xl flex flex-col items-center text-center">
+                <img id="profile-picture" src="https://placehold.co/120x120" alt="User Profile" class="w-24 h-24 rounded-full border-4 border-orange-500 mb-4">
+                <h2 id="profile-name" class="text-xl font-semibold text-white">Loading...</h2>
+                <p id="profile-email" class="text-sm text-gray-400 mb-4">Loading...</p>
+                <p id="profile-id" class="text-xs text-gray-500 break-words mb-4"></p>
+                <button id="google-auth-btn" class="bg-orange-500 text-white px-4 py-2 rounded-full font-medium">
+                    Sign in with Google
+                </button>
+            </div>
+            
+            <h3 class="text-xl font-bold mt-8 mb-4">My Posts</h3>
+            <div id="my-posts-container" class="space-y-6">
+                <!-- User's posts will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-gray-900 p-3 border-t border-gray-700 flex justify-evenly items-center shadow-lg rounded-t-2xl z-20">
+        <button id="nav-home" class="nav-button flex flex-col items-center text-orange-500 active">
+            <i class="fas fa-home text-xl"></i>
+            
+        </button>
+        <button id="nav-fav" class="nav-button flex flex-col items-center text-gray-400">
+            <i class="fas fa-bookmark text-xl"></i>
+        </button>
+        <button id="nav-add" class="bg-orange-500 text-white p-4 rounded-full -mt-6 shadow-lg">
+            <i class="fas fa-plus text-xl"></i>
+        </button>
+        <button id="nav-notif" class="nav-button flex flex-col items-center text-gray-400">
+            <i class="fas fa-bell text-xl"></i>
+        </button>
+        <button id="nav-profile" class="nav-button flex flex-col items-center text-gray-400">
+            <i class="fas fa-user text-xl"></i>
+        </button>
+    </nav>
+    
+    <!-- Link to your JavaScript file -->
+    <script type="module" src="js/index.js"></script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpotShare | Add a Spot</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a1a;
+        }
+        .tag-button{
+            color: rgb(190, 183, 183);
+            border: 3px solid gray;
+            border-radius: 30px;
+            padding: 10px;
+            background-color: rgb(75, 73, 73);
+        }
+        .tag-button.active {
+            background-color: #f97316;
+            color: white;
+            font-weight: 600;
+            border: 3px solid #ffffff;
+            padding: 10px;
+            border-radius: 30px;
+        }
+    </style>
+</head>
+<body class="bg-[#1a1a1a] text-white flex flex-col min-h-screen">
+    <div id="add-post-page" class="p-6 pb-20">
+        <h1 class="text-3xl font-bold text-center mt-8 mb-6 text-white">Add a Spot</h1>
+
+        <!-- Category Selection -->
+        <div class="flex justify-center items-center p-2 rounded-full bg-gray-800 border border-gray-700 mb-6">
+            <button id="food-btn" class="flex-1 px-4 py-2 rounded-full bg-orange-500 text-white font-medium focus:outline-none transition-colors duration-200">
+                Food
+            </button>
+            <button id="place-btn" class="flex-1 px-4 py-2 rounded-full text-gray-400 font-medium focus:outline-none transition-colors duration-200">
+                Place
+            </button>
+        </div>
+
+        <form id="add-post-form" class="space-y-6">
+            <!-- Name Field -->
+            <div>
+                <label for="post-name" class="block text-sm font-medium text-gray-400 mb-1">Name of the Spot</label>
+                <input type="text" id="post-name" name="post-name" required class="w-full p-3 rounded-xl bg-gray-800 text-white placeholder-gray-500 border border-gray-700 focus:outline-none focus:border-orange-500">
+            </div>
+
+            <!-- Location Field -->
+            <div>
+                <label for="post-location" class="block text-sm font-medium text-gray-400 mb-1">Location</label>
+                <input type="text" id="post-location" name="post-location" required class="w-full p-3 rounded-xl bg-gray-800 text-white placeholder-gray-500 border border-gray-700 focus:outline-none focus:border-orange-500">
+            </div>
+
+            <!-- Description Field -->
+            <div>
+                <label for="post-description" class="block text-sm font-medium text-gray-400 mb-1">Description</label>
+                <textarea id="post-description" name="post-description" rows="4" maxlength="300" class="w-full p-3 rounded-xl bg-gray-800 text-white placeholder-gray-500 border border-gray-700 focus:outline-none focus:border-orange-500 resize-none"></textarea>
+                <p id="char-counter" class="text-xs text-gray-500 mt-1 text-right">0 / 35 words (approx)</p>
+            </div>
+            
+            <!-- Image Upload Section -->
+            <div class="text-center bg-gray-800 border border-gray-700 rounded-xl p-6 hover:bg-gray-700 cursor-pointer transition-colors duration-200">
+                <input type="file" id="image-upload" name="images" multiple accept="image/*" class="hidden">
+                <label for="image-upload" class="flex flex-col items-center justify-center">
+                    <i class="fas fa-upload text-3xl text-orange-500"></i>
+                    <span class="mt-2 font-medium text-gray-400">Upload Images</span>
+                    <span class="text-xs text-gray-500">(Max 10 images)</span>
+                </label>
+            </div>
+            <div id="image-preview" class="grid grid-cols-3 gap-2 mt-4"></div>
+
+            <!-- Tags/Subcategories Section -->
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-2">Select Tags</label>
+                <div id="tags-container" class="flex flex-wrap gap-2">
+                    <!-- Tags will be injected here by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="w-full py-4 bg-orange-500 text-white rounded-xl font-bold text-lg shadow-md hover:bg-orange-600 transition-colors duration-200">
+                Submit Post
+            </button>
+        </form>
+    </div>
+
+    <script type="module" src="js/add_post.js"></script>
+    <script type="module">
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDs4sa2rBhh1GkNyjaKP-pV107XUQNM-4s",
+            authDomain: "spotshare-11582.firebaseapp.com",
+            projectId: "spotshare-11582",
+            storageBucket: "spotshare-11582.appspot.com",
+            messagingSenderId: "799981561520",
+            appId: "1:799981561520:web:247d414f62cd26e2877d75",
+            measurementId: "G-2292PBZTF7"
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                // If user is not logged in, redirect to login page
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
+</body>
+</html>
